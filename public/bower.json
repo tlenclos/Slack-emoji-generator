@@ -1,0 +1,21 @@
+{
+  "name": "Slack emoji generator",
+  "version": "0.1",
+  "homepage": "https://github.com/tlenclos/Slack-emoji-generator",
+  "authors": [
+    "Thibault Lenclos <tlenclos@jolicode.com>"
+  ],
+  "description": "Service to help you generate emojis for Slack from image",
+  "license": "MIT",
+  "dependencies": {
+    "fabric": "~1.4.13",
+    "FileSaver.js": "https://github.com/eligrey/FileSaver.js.git"
+  },
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

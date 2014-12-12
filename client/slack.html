@@ -1,0 +1,21 @@
+<head>
+  <title>Slack emoji generator</title>
+  <script src="/bower_components/fabric/dist/fabric.js"></script>
+  <script src="/bower_components/FileSaver.js/FileSaver.js"></script>
+</head>
+
+<body>
+    {{> home }}
+</body>
+
+<template name="home">
+    <div id="controls">
+        <h2>Slack emoji generator</h2>
+
+        <p>Add image <input type="file" id="imgLoader"> |
+            <a href="#" id="control-add-emoji">Add emoji</a> |
+            <a href="#" id="control-generate">Generate</a>
+        </p>
+    </div>
+    <canvas id="generator"></canvas>
+</template>
