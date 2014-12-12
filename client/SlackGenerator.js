@@ -1,6 +1,6 @@
 /*
     TODO
-    - Remove emoji
+    - Text emoji
     - Automatic uploader to slack
     - Better design
     - Preview of all emojis (split layout ?)
@@ -74,7 +74,6 @@
                 left: rect.left,
                 top: rect.top-30
             });
-            self.canvas.add(text);
 
             // Group
             var group = new fabric.Group([rect, text], {
@@ -118,6 +117,14 @@
             self.canvas.deactivateAll();
         };
 
+        this.removeSelectedEmoji = function() {
+            var emoji = self.canvas.getActiveObject();
+            if (emoji) {
+                self.canvas.remove(emoji);
+                self.emojis.splice(self.emojis.indexOf(emoji), 1);
+            }
+        };
+
         this.generate = function() {
             var exportData = [];
 
@@ -136,11 +143,12 @@
                         height: self.emojiSize
                     })
                 });
-
-                var blob = new Blob([JSON.stringify(exportData, null, 4)], { "type" : "application\/json" });
-                saveAs(blob, "export.json");
-                fabric.log('Export generated ', exportData);
             });
+
+            var blob = new Blob([JSON.stringify(exportData, null, 4)], { "type" : "application\/json" });
+            saveAs(blob, "export.json");
+            fabric.log('Export generated ', exportData);
+
             self.toggleLayerVisibility();
         };
     };
