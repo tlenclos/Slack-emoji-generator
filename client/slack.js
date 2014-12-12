@@ -1,4 +1,12 @@
+
+var height = window.innerHeight-150;
+var width = window.innerWidth-300;
+generator = new SlackGenerator(height, width, 'generator', 'imgLoader');
+
 Template.home.helpers({
+  'emojis': function() {
+    return generator.emojis.get();
+  }
 });
 
 Template.home.events({
@@ -10,12 +18,14 @@ Template.home.events({
   },
   'click a#control-generate': function() {
     generator.generate();
+  },
+  'keyup input.emoji-name': function(event, context) {
+    var name = event.target.value;
+    var id = event.target.dataset.id;
+    generator.setEmojiName(id, name);
   }
 });
 
 Template.home.rendered = function() {
-  var height = window.innerHeight-$('#controls').height()-100;
-  var width = window.innerWidth-50;
-  generator = new SlackGenerator(height, width, 'generator', 'imgLoader');
   generator.init();
 };

@@ -1,4 +1,9 @@
-#generator {
-    position: absolute;
+#container-generator {
     border: 2px solid dimgray;
+    margin-left: 200px;
+}
+
+#emojis {
+    float: left;
+    width: 15%;
 }

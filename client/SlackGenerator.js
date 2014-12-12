@@ -1,7 +1,8 @@
 /*
     TODO
-    - Text emoji
+    - Preview below name in list
     - Automatic uploader to slack
+    - Local storage
     - Better design
     - Preview of all emojis (split layout ?)
  */
@@ -12,7 +13,7 @@
         this.canvasId = _canvasId;
         this.imageLoadDomId = _imageLoaderId;
         this.canvas = this.imageLoader = null;
-        this.emojis = [];
+        this.emojis = new ReactiveVar([]);
         this.emojiSize = 128;
         this.emojiVisible = true;
         var self = this;
@@ -32,7 +33,6 @@
 
         this.setupEvents = function() {
             document.getElementById(self.imageLoadDomId).onchange = function handleImage(e) {
-
                 var reader = new FileReader();
                 reader.onload = function (event) {
                     var imgObj = new Image();
@@ -48,8 +48,7 @@
                         self.canvas.add(image);
                         self.canvas.moveTo(image, 0);
                     }
-
-                }
+                };
                 reader.readAsDataURL(e.target.files[0]);
             }
         };
@@ -68,11 +67,11 @@
             });
 
             // Emoji name
-            var text = new fabric.IText(':emoji', {
+            var text = new fabric.Text(':emoji', {
                 textAlign: 'center',
                 fontSize: 30,
-                left: rect.left,
-                top: rect.top-30
+                left: rect.left+30,
+                top: rect.top+40
             });
 
             // Group
@@ -81,16 +80,10 @@
                 left : 100
             });
 
-            group.on('selected', function(e) {
-                console.log('Emoji selected');
-                // text.enterEditing();
-            });
-
-
             self.canvas.add(group);
             self.canvas.moveTo(group, 10);
 
-            self.emojis.push(group);
+            self.addEmoji(':emoji', group);
         };
 
         this.addTestImage = function() {
@@ -108,7 +101,7 @@
         };
 
         this.toggleLayerVisibility = function() {
-            self.emojis.forEach(function(object) {
+            self.emojis.get().forEach(function(object) {
                 object.opacity = !self.emojiVisible;
             });
 
@@ -121,7 +114,42 @@
             var emoji = self.canvas.getActiveObject();
             if (emoji) {
                 self.canvas.remove(emoji);
-                self.emojis.splice(self.emojis.indexOf(emoji), 1);
+                self.removeEmoji(emoji);
+            }
+        };
+
+        this.addEmoji = function(name, object) {
+            var emojis = self.emojis.get();
+            emojis.push({index: emojis.length, name: name, view: object});
+            self.emojis.set(emojis);
+        };
+
+        this.removeEmoji = function(emojiView) {
+            var emoji = _.find(self.emojis.get(), function(item) { return item.view == emojiView});
+
+            if (emoji) {
+                var emojis = self.emojis.get();
+                emojis.splice(self.emojis.get().indexOf(emoji), 1);
+                self.emojis.set(emojis);
+            } else {
+                console.error('Error while deleting emoji', emojiView);
+            }
+        };
+
+        this.setEmojiName = function(id, name) {
+            var emoji = _.find(self.emojis.get(), function(item) { return item.index == id});
+
+            if (emoji) {
+                var emojis = self.emojis.get();
+                var index = emojis.indexOf(emoji);
+                emoji.name = name;
+                emoji.view.item(1).text = name;
+                emojis[index] = emoji;
+                self.emojis.set(emojis);
+
+                self.canvas.renderAll();
+            } else {
+                console.error('Error while setting emoji name', id, name);
             }
         };
 
@@ -129,12 +157,13 @@
             var exportData = [];
 
             self.toggleLayerVisibility();
-            self.emojis.forEach(function(object) {
-                var left = object.left;
-                var top = object.top-object.item(0).top-18; // WTF ?
+            self.emojis.get().forEach(function(object) {
+                var view = object.view;
+                var left = view.left;
+                var top = view.top-view.item(0).top-18; // WTF ?
 
                 exportData.push({
-                    name: object.item(1).text,
+                    name: view.item(1).text,
                     data: self.canvas.toDataURL({
                         format: 'png',
                         left: left,

@@ -18,5 +18,17 @@
             <a href="#" id="control-generate">Generate</a>
         </p>
     </div>
-    <canvas id="generator"></canvas>
+
+    <div id="emojis">
+        <h3>Emojis</h3>
+        <ul>
+        {{#each emojis}}
+            <li><input type="text" value="{{name}}" data-id="{{index}}" class="emoji-name" /></li>
+        {{/each}}
+        </ul>
+    </div>
+
+    <div id="container-generator">
+        <canvas id="generator"></canvas>
+    </div>
 </template>
